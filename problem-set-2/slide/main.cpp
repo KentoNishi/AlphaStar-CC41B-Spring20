@@ -94,7 +94,7 @@ int V, E, K;
 
 struct Edge {
     int to;
-    int fun;
+    long long fun;
 };
 
 struct Node {
@@ -103,23 +103,22 @@ struct Node {
 
 vector<Node> graph;
 
-vector<vector<int>> dp;
+vector<vector<long long>> dp;
 
-int funFromNode(int v, int k) {
+long long funFromNode(int v, int k) {
     if (dp[v][k] >= 0) {
         return dp[v][k];
     }
-    int maxFun = 0;
+    long long maxFun = 0;
     for (auto &edge : graph[v].edges) {
         maxFun = max(maxFun, edge.fun + funFromNode(edge.to, k));
     }
-    int minFun = maxFun;
+    long long minFun = maxFun;
     if (k > 0) {
         for (auto &edge : graph[v].edges) {
             minFun = min(minFun, edge.fun + funFromNode(edge.to, k - 1));
         }
     }
-    cout << "At node " << v << " with k=" << k << ", the max fun is " << maxFun << " and the min fun is " << minFun << endl;
     dp[v][k] = min(minFun, maxFun);
     return dp[v][k];
 }
@@ -128,14 +127,14 @@ int main() {
     cin >> V >> E >> K;
     graph.resize(V);
     for (int i = 0; i < E; i++) {
-        int a, b, c;
+        int a, b;
+        long long c;
         cin >> a >> b >> c;
         a--;
         b--;
-        graph[b].edges.push_back({a, c});
+        graph[a].edges.push_back({b, c});
     }
-    // graph built in reverse!
-    dp = vector<vector<int>>(V, vector<int>(K + 1, -1));
-    cout << funFromNode(V - 1, K) << endl;
+    dp = vector<vector<long long>>(V, vector<long long>(K + 1, -1));
+    cout << funFromNode(0, K) << endl;
     return 0;
 }
