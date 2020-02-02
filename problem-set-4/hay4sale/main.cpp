@@ -64,9 +64,20 @@ int main() {
     for (int i = 0; i < H; i++) {
         cin >> bales[i];
     }
-    vector<vector<int>> dp = vector<vector<int>>(H, vector<int>(C + 1));
-    for (int i = 0; i < H; i++) {
-        dp[i][0] = dp[i][bales[i]] = 1;
+    vector<vector<bool>> dp = vector<vector<bool>>(H, vector<bool>(C + 1));
+    dp[0][0] = dp[0][bales[0]] = true;
+    for (int i = 1; i < H; i++) {
+        for (int j = 0; j < C + 1; j++) {
+            dp[i][j] = dp[i - 1][j];
+            if (j - bales[i] >= 0) {
+                dp[i][j] = dp[i][j] || dp[i - 1][j - bales[i]];
+            }
+        }
     }
+    int i;
+    for (i = C; !dp[H - 1][i];) {
+        i--;
+    }
+    cout << i << endl;
     return 0;
 }
