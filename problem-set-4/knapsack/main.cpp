@@ -57,12 +57,10 @@ int main() {
         cin >> items[i].size >> items[i].value;
     }
     vector<vector<long long>> dp = vector<vector<long long>>(N, vector<long long>(C + 1));
-    for (int i = 0; i < N; i++) {
-        dp[i][items[i].size] = items[i].value;
+    dp[0][0] = 0;
+    dp[0][items[0].size] = items[0].value;
+    for (int i = 1; i < N; i++) {
         for (int j = 0; j < C + 1; j++) {
-            if (j == items[i].size) {
-                continue;
-            }
             long long skip = 0;
             if (i > 0) {
                 skip = dp[i - 1][j];
