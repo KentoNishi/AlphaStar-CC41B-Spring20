@@ -72,44 +72,33 @@ using namespace std;
 
 int N;
 
-vector<int> countLeft(int num, vector<int> &v) {
-    vector<int> dp = vector<int>(N + 1);
+vector<vector<int>> countInRange(vector<int> &v) {
+    vector<vector<int>> dp = vector<vector<int>>(3, vector<int>(N + 1));
     for (int i = 1; i <= N; i++) {
-        dp[i] = dp[i - 1];
-        if (v[i - 1] != num) {
-            dp[i]++;
+        for (int j = 0; j < 3; j++) {
+            dp[j][i] = dp[j][i - 1];
+            if (v[i - 1] != j + 1) {
+                dp[j][i]++;
+            }
         }
     }
-    /*
-    for (int i = 0; i < N; i++) {
-        cout << v[i] << " ";
-    }
-    cout << endl;
-    for (int i = 0; i <= N; i++) {
-        cout << dp[i] << " ";
-    }
-    cout << endl;
-    */
     return dp;
 }
 
-int swapsInRange(vector<vector<int>> &swapsToLeft, int group, int left, int right) {
-    return swapsToLeft[group - 1][right] - swapsToLeft[group - 1][left];
-}
-
 int numSwaps(vector<int> &v) {
-    vector<vector<int>> swapsToLeft = vector<vector<int>>(3);
-    for (int i = 0; i < 3; i++) {
-        swapsToLeft[i] = countLeft(i + 1, v);
-    }
+    vector<vector<int>> swapsInRange = countInRange(v);
     int ans = N;
     for (int r1 = 0; r1 <= N; r1++) {
         for (int r2 = r1; r2 <= N; r2++) {
-            int local = swapsInRange(swapsToLeft, 1, 0, r1);
-            local += swapsInRange(swapsToLeft, 2, r1, r2);
-            local += swapsInRange(swapsToLeft, 3, r2, N);
-            // cout << swapsInRange(swapsToLeft, 1, 0, r1) << " " << swapsInRange(swapsToLeft, 2, r1, r2) << " " << swapsInRange(swapsToLeft, 3, r2, N) << endl;
-            // cout << 0 << ":" << r1 << ":" << r2 << ":" << N << " = " << local << endl;
+            int local = 0;
+            local += swapsInRange[0][r1] - swapsInRange[0][0];
+            local += swapsInRange[1][r2] - swapsInRange[1][r1];
+            local += swapsInRange[2][N] - swapsInRange[2][r2];
+            ans = min(ans, local);
+            local = 0;
+            local += swapsInRange[2][r1] - swapsInRange[2][0];
+            local += swapsInRange[1][r2] - swapsInRange[1][r1];
+            local += swapsInRange[0][N] - swapsInRange[0][r2];
             ans = min(ans, local);
         }
     }
@@ -118,15 +107,12 @@ int numSwaps(vector<int> &v) {
 
 int main() {
     cin >> N;
-    vector<int> v1;
-    vector<int> v2;
-    v1.resize(N);
-    v2.resize(N);
+    vector<int> v;
+    v.resize(N);
     for (int i = 0; i < N; i++) {
-        cin >> v1[i];
-        v2[N - 1 - i] = v1[i];
+        cin >> v[i];
     }
-    int ans = min(numSwaps(v2), numSwaps(v1));
+    int ans = numSwaps(v);
     cout << ans << endl;
     return 0;
 }
