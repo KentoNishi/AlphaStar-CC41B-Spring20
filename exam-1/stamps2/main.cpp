@@ -65,8 +65,41 @@ int main() {
     cin >> K >> N;
     vector<int> stamps;
     stamps.resize(N);
+    int maximum = 0;
     for (int i = 0; i < N; i++) {
         cin >> stamps[i];
+        maximum = max(maximum, stamps[i]);
     }
+    maximum *= K;
+    vector<vector<int>> dp = vector<vector<int>>(N + 1, vector<int>(maximum + 1, K + 1));
+    dp[0][0] = 0;
+    for (int i = 1; i <= N; i++) {
+        for (int j = 0; j <= maximum; j++) {
+            dp[i][j] = dp[i - 1][j];
+            if (j == stamps[i - 1]) {
+                dp[i][j] = 1;
+            }
+            int index = j - stamps[i - 1];
+            if (index > 0) {
+                dp[i][j] = min(dp[i][j], dp[i][index] + 1);
+                dp[i][j] = min(dp[i][j], dp[i - 1][index] + 1);
+            }
+        }
+    }
+    /*
+    for (int i = 1; i <= N; i++) {
+        for (int j = 0; j <= maximum; j++) {
+            cout << dp[i][j] << " ";
+        }
+        cout << endl;
+    }
+    */
+    for (int j = 1; j <= maximum; j++) {
+        if (dp[N][j] == K + 1) {
+            cout << j - 1 << endl;
+            return 0;
+        }
+    }
+    cout << maximum << endl;
     return 0;
 }
