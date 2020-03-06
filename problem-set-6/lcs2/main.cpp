@@ -54,7 +54,7 @@ int main() {
         parity = 1 - parity;
         for (int j = 1; j <= d2; j++) {
             dp[parity][j] = max(dp[parity][j - 1], dp[1 - parity][j]);
-            if (s1[i] == s2[j]) {
+            if (s1[i - 1] == s2[j - 1]) {
                 dp[parity][j] = max(dp[1 - parity][j - 1] + 1, dp[parity][j]);
             }
         }
