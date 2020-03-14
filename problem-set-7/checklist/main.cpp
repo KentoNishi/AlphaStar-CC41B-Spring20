@@ -61,9 +61,11 @@ struct Point {
     int y;
 };
 
-long long dist(Point &a, Point &b) {
-    return (long long)pow(a.x - b.x, 2) + (long long)pow(a.y - b.y, 2);
+long dist(Point &a, Point &b) {
+    return (long)pow(a.x - b.x, 2) + (long)pow(a.y - b.y, 2);
 }
+
+const long long INF = 1L << 62;
 
 int main() {
     int H, G;
@@ -80,13 +82,18 @@ int main() {
         Point &p = cowsG[i];
         cin >> p.x >> p.y;
     }
-    vector<vector<vector<long long>>> dp = vector<vector<vector<long long>>>(H + 1, vector<vector<long long>>(G + 1, vector<long long>(2, 1L << 62)));
+    vector<vector<vector<long>>> dp = vector<vector<vector<long>>>(2, vector<vector<long>>(G + 1, vector<long>(2, 1L << 62)));
     dp[1][0][0] = 0;
     // dp[i][j][k]
     // i: next holstein index
     // j: next guernsey index
-    // k: 0 = from holstein, 1 = from guernsey
-    for (int h = 0; h <= H; h++) {
+    // k: 0 = holstein, 1 = guernsey
+    for (int h = 1; h <= H; h++) {
+        int thisH = h % 2;
+        int nextH = 1 - thisH;
+        for (int i = 0; i <= G; i++) {
+            dp[nextH][i][0] = dp[nextH][i][1] = INF;
+        }
         for (int g = 0; g <= G; g++) {
             for (int k = 0; k < 2; k++) {
                 if (k == 0 && h == 0) {
@@ -102,14 +109,22 @@ int main() {
                     source = cowsG[g - 1];
                 }
                 if (h < H) {
-                    dp[h + 1][g][0] = min(dp[h + 1][g][0], dp[h][g][k] + dist(cowsH[h], source));
+                    dp[nextH][g][0] = min(dp[nextH][g][0], dp[thisH][g][k] + dist(cowsH[h], source));
                 }
                 if (g < G) {
-                    dp[h][g + 1][1] = min(dp[h][g + 1][1], dp[h][g][k] + dist(cowsG[g], source));
+                    dp[thisH][g + 1][1] = min(dp[thisH][g + 1][1], dp[thisH][g][k] + dist(cowsG[g], source));
                 }
             }
         }
     }
-    cout << dp[H][G][0] << endl;
+    /*
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j <= G; j++) {
+            cout << dp[i][j][0] << "," << dp[i][j][1] << " ";
+        }
+        cout << endl;
+    }
+    */
+    cout << dp[H % 2][G][0] << endl;
     return 0;
 }
