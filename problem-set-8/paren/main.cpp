@@ -56,29 +56,38 @@ As discussed above.
 
 #include <bits/stdc++.h>
 #define int64 long long
+#define MOD 12345678910LL
 using namespace std;
 
 int N;
 
 int main() {
     cin >> N;
-    int depth = 0;
     vector<int> parens = vector<int>(N);
     for (int i = 0; i < N; i++) {
         cin >> parens[i];
     }
-    int64 ans = 0;
+    vector<int64> stack = vector<int64>(N / 2 + 1);
+    int64 depth = 0;
     for (int i = 0; i < N; i++) {
-        if (parens[i] == 0 && i != N - 1 && parens[i + 1] == 1) {
-            ans += pow(2, depth);
-            ans %= 12345678910;
-            i++;
-        } else if (parens[i] == 0) {
+        int num = parens[i];
+        switch (num) {
+        case 0: {
             depth++;
-        } else if (parens[i] == 1) {
+            break;
+        }
+        case 1: {
+            if (stack[depth] == 0) {
+                stack[depth - 1]++;
+            } else {
+                stack[depth - 1] += stack[depth] * 2;
+            }
+            stack[depth - 1] %= MOD;
+            stack[depth] = 0;
             depth--;
         }
+        }
     }
-    cout << ans << endl;
+    cout << stack[0] << endl;
     return 0;
 }
