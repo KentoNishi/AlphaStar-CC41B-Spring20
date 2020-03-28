@@ -40,44 +40,44 @@ SAMPLE OUTPUT:
 #define int64 long long
 using namespace std;
 
-int64 nextNum(int64 num) {
-    int64 memo = num;
+vector<char> num;
+
+void nextNum() {
     int moveDigit = -1;
     int digit = 0;
-    while (memo > 0) {
-        if (moveDigit == -1 && (memo & 3) == 1) {
+    while (num.size() - digit > 0) {
+        if (moveDigit == -1 && (num[num.size() - 1 - digit] == '1' && (num.size() - digit == 1 || num[num.size() - 2 - digit] == '0'))) {
             // remaining digits look like "01"
             moveDigit = digit;
         }
-        memo = memo >> 1;
         digit++;
     }
-    int rightPart = 0;
-    memo = num;
+    vector<char> rightPart;
+    digit = 0;
     for (int i = 0; i < moveDigit; i++) {
-        if (memo & 1) {
-            rightPart++;
+        if (num[num.size() - 1 - digit] == '1') {
+            rightPart.push_back('1');
+        } else {
+            rightPart.push_back('0');
         }
-        rightPart = rightPart << 1;
-        memo = memo >> 1;
+        digit++;
     }
-    rightPart = rightPart >> 1;
-    int leftPart = memo + 1;
+    vector<char> leftPart;
+    for (int i = 0; i < num.size() - digit; i++) {
+        leftPart.push_back(num[i]);
+    }
+    if (leftPart.size() >= 2) {
+        swap(leftPart[leftPart.size() - 1], leftPart[leftPart.size() - 2]);
+    } else {
+        leftPart.push_back('0');
+    }
     /*
     cout << "Move digit: " << moveDigit << endl;
     cout << "Right part: " << rightPart << endl;
     cout << "Left part: " << leftPart << endl;
     */
-    return (leftPart << moveDigit) + rightPart;
-}
-
-string binaryString(int num) {
-    string str = "";
-    while (num > 0) {
-        str = (num & 1 ? "1" : "0") + str;
-        num = num >> 1;
-    }
-    return str;
+    num = leftPart;
+    num.insert(num.end(), rightPart.begin(), rightPart.end());
 }
 
 int main() {
@@ -91,17 +91,19 @@ int main() {
         cout << endl;
         return 0;
     }
-    int64 num = 0;
     for (int64 i = 0; i < K; i++) {
-        num = (num << 1) + 1;
+        num.push_back('1');
     }
     for (int64 i = 0; i < N - 1; i++) {
-        num = nextNum(num);
+        nextNum();
         /*
-        cout << "Step " << i + 1 << ": " << bitset<8>(num) << endl;
-        cout << "================" << endl;
+        cout << num << endl;
+        cout << "===================" << endl;
         */
     }
-    cout << binaryString(num) << endl;
+    for (int i = 0; i < num.size(); i++) {
+        cout << num[i];
+    }
+    cout << endl;
     return 0;
 }
